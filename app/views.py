@@ -4,14 +4,27 @@ Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
 Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
-
+from form.py import ContactForm
 from app import app
 from flask import render_template, request, redirect, url_for, flash
-
+from app import mail
+from flask_mail import Message
 
 ###
 # Routing for your application.
 ###
+
+@app.route("/contact", methods=['GET', 'POST'])
+def contact():
+    form = ContactForm()
+    if request.method =="POST":
+        if form.validate_on_submit():
+            msg = Message(contactForm.subject.data, sender=(contactForm.name.data,contactForm.email.data), recipients=["to@example.com"])
+            msg.body = contactForm.message.data
+            mail.send(msg)
+            flash('Message sent', 'success')
+            return redirect(url_for('home'))
+        return render_template('contact.html',form=form)
 
 @app.route('/')
 def home():
